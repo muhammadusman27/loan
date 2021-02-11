@@ -18,7 +18,7 @@ class CreateLoansTable extends Migration
             $table->string('name');
             $table->string('bank');
             $table->integer('amount');
-            $table->boolean('status')->default(0);
+            $table->boolean('status')->nullable();
             $table->timestamps();
         });
     }

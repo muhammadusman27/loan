@@ -6,8 +6,7 @@ use Illuminate\Http\Request;
 
 class LoanController extends Controller
 {
-    public function index()
-    {
+    public function index() {
     	$loans = Loan::all()->toArray();
         return array_reverse($loans);
     }
@@ -48,5 +47,25 @@ class LoanController extends Controller
     		return "Loan deleted successfully.";
     	}
     	return "Long request not found.";
+    }
+
+    public function decline($id) {
+        $loan = Loan::find($id);
+        if ($loan) {
+            $loan->status = false;
+            $loan->save();
+            return "Loan request declined successfully.";
+        }
+        return "Loan request not found.";
+    }
+
+    public function approve($id) {
+        $loan = Loan::find($id);
+        if ($loan) {
+            $loan->status = true;
+            $loan->save();
+            return "Loan request approved successfully.";
+        }
+        return "Loan request not found.";
     }
 }

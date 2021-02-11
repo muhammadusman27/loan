@@ -1,6 +1,13 @@
 <template>
     <div>
         <h3 class="text-center">Edit Loan</h3>
+        <p v-if="success" class="success">{{ success }}</p>
+        <div v-if="errors.length" class="danger">
+            <p>The following fields are required to submit the loan request.</p>
+            <ul>
+                <li v-for="error in errors" > {{ error }}</li>
+            </ul>
+        </div>
         <div class="row">
             <div class="col-12">
                 <form @submit.prevent="updateLoan">
@@ -24,11 +31,26 @@
     </div>
 </template>
 
+<style>
+    .danger {
+        color: #842029;
+        background-color: #f8d7da;
+        padding-left: 5px;
+    }
+    .success {
+        color: #0f5132;
+        background-color: #d1e7dd;
+        padding-left: 5px;
+    }
+</style>
+
 <script>
     export default {
         data() {
             return {
-                loan: {}
+                loan: {},
+                errors: [],
+                success: ''
             }
         },
         created() {
@@ -41,11 +63,27 @@
         },
         methods: {
             updateLoan() {
-                this.axios
-                    .put(`http://localhost:8000/api/loan/update/${this.$route.params.id}`, this.loan)
-                    .then((response) => {
-                        this.$router.push({name: 'home'});
-                    });
+                if (this.loan.name != '' && this.loan.bank != '' && this.loan.amount != '') {
+                    this.axios.put(`http://localhost:8000/api/loan/update/${this.$route.params.id}`, this.loan)
+                    this.loading = false;
+                    this.success = 'Loan request edit successfully.';
+                    this.errors = [];
+                }
+                else {
+                    // Empty the erros array if there is any message that already exist.
+                    this.errors = []; 
+                    // Check if loan items (name, bank, amount) is empty.
+                    if (this.loan.name ===  '') {
+                        this.errors.push('Name is required.');
+                    }
+                    if (this.loan.bank ===  '') {
+                        this.errors.push('Bank is required.');
+                    }
+                    if (this.loan.amount ===  '') {
+                        this.errors.push('Amount is required.');
+                    }
+                }
+
             }
         }
     }
